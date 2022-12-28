@@ -1,4 +1,4 @@
-from machine import Pin, I2C
+from machine import Pin, I2C, SoftI2C
 from time import sleep
 import mpu6050
 import math
@@ -12,7 +12,7 @@ right_led = Pin(3, Pin.OUT)
 
 imu_data = {}
 
-imui2c = I2C(1, scl=Pin(15), sda=Pin(14))
+imui2c = SoftI2C(scl=Pin(15), sda=Pin(14))
 
 imu = mpu6050.accel(imui2c)
 
@@ -29,9 +29,20 @@ roll = 0
 while True:
     imu_data = imu.get_values()
    
-    accx =  (imu_data['AcX'] ) / 131.0
-    accy =  (imu_data['AcY'] ) / 131.0
-    accz =  (imu_data['AcZ'] ) / 131.0
+    try:   
+        accx =  (imu_data['AcX'] ) / 131.0
+        accy =  (imu_data['AcY'] ) / 131.0
+        accz =  (imu_data['AcZ'] ) / 131.0
+    except ZeroDivisionError:
+        accx = 0;
+    try:
+        accy =  (imu_data['AcY'] ) / 131.0
+    except ZeroDivisionError:
+        accy = 0;
+    try:
+        accz =  (imu_data['AcZ'] ) / 131.0
+    except ZeroDivisionError:
+        accz = 0;
     
     # print(x, y, z)
     accAnglex = (math.atan(accy /math.sqrt(pow(accx, 2) + pow(accz, 2))) * 180 / math.pi) - 0.58

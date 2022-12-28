@@ -12,4 +12,3 @@ while True:
     Red_LED.toggle()
     time.sleep(1)
 
-

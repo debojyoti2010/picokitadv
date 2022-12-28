@@ -1,4 +1,4 @@
-from machine import Pin, I2C, 
+from machine import Pin, I2C, SoftI2C
 from ssd1306 import SSD1306_I2C
 from time import sleep
 import mpu6050
@@ -12,7 +12,7 @@ imu_data = {}
 
 
 i2c = I2C(0, scl=Pin(13), sda=Pin(12), freq=400000)
-imui2c = I2C(1, scl=Pin(15), sda=Pin(14))
+imui2c = SoftI2C(scl=Pin(15), sda=Pin(14))
 
 imu = mpu6050.accel(imui2c)
 oled = SSD1306_I2C(WIDTH, HEIGHT, i2c)                   
@@ -39,8 +39,16 @@ while True:
     accz =  (imu_data['AcZ'] ) / 131.0
     
     # print(x, y, z)
-    accAnglex = (math.atan(accy /math.sqrt(pow(accx, 2) + pow(accz, 2))) * 180 / math.pi) - 0.58
-    accAngleY = (math.atan(-1 * accx / math.sqrt(pow(accy, 2) + pow(accz, 2))) * 180 / math.pi) + 1.58
+    try:
+        accAnglex = (math.atan(accy /math.sqrt(pow(accx, 2) + pow(accz, 2))) * 180 / math.pi) - 0.58
+    except ZeroDivisionError:
+        print('accAngleX caught ZeroDivisionError, resetting value to 0')
+        accAnglex = 0;
+    try:
+        accAngleY = (math.atan(-1 * accx / math.sqrt(pow(accy, 2) + pow(accz, 2))) * 180 / math.pi) + 1.58
+    except ZeroDivisionError:
+        print('accAngleY caught ZeroDivisionError, resetting value to 0')
+        accAngleY = 0;
      
     
     cTime = time.time()
@@ -74,13 +82,11 @@ while True:
     else:
         y = int(32 + roll * 10)
         
-    oled.text("Pico Kit", x, y ,1)
+    #oled.text("Tilt me and see", x, y ,1)
     
-    """
-    oled.text("AcX: {}".format(imu_data['AcX']), 0, 30)
-    oled.text("AcY: {}".format(imu_data['AcY']), 15, 30)
-    oled.text("AcZ: {})".format(imu_data['AcZ']), 30, 30)
-    """
+    oled.text("AcX: {} \n".format(imu_data['AcX']), x, y + 0)
+    oled.text("AcY: {} \n".format(imu_data['AcY']), x, y + 15)
+    oled.text("AcZ: {} \n".format(imu_data['AcZ']), x, y + 30)
     oled.show()
     sleep(0.001)
     

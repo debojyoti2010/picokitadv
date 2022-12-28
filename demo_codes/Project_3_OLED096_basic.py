@@ -9,7 +9,7 @@ HEIGHT = 64
 
 # fb = framebuf.FrameBuffer(buffer, 128, 64, framebuf.MONO_HLSB)
 
-i2c = I2C(0, scl=Pin(13), sda=Pin(12),freq=200000)
+i2c = I2C(0, scl=Pin(13), sda=Pin(12), freq=200000)
 
 oled = SSD1306_I2C(WIDTH, HEIGHT, i2c)
 
@@ -22,7 +22,7 @@ oled.fill(0)
 # draw pixel
 # oled.pixel(30, 33, 1)
 # draw rectangle
-oled.fill_rect(26, 26, 25, 25, 1)
+oled.fill_rect(26, 26, 24, 24, 1)
 
 # draw line
 oled.line(64, 0, 64, 57, 1)
@@ -32,9 +32,10 @@ oled.invert(0)
 
 # Put text on screen
 #oled.text("Hello World", 0, 0)
-oled.text("Hello Pico", 0, 57)
+oled.text("Hi There", 0, 57)
 
 # Display 
 oled.show()
 
 
+                                                                                                                                                
